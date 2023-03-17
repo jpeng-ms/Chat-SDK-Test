@@ -1,0 +1,186 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 1rem;
+  background: #f0f0f0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  margin: 1rem auto 2rem;
+  max-width: 1000px;
+}
+
+pre {
+  font-size: 1rem;
+  font-family: Menlo, monospace;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.flex {
+  margin: 0 auto;
+  max-width: 1000px;
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+}
+
+.section {
+  background: white;
+  border: 1px solid #dedede;
+  border-radius: 8px;
+  padding: 2rem;
+}
+
+.form.section {
+  flex: 0.5;
+}
+
+.results.section {
+  flex: 1;
+}
+
+.advanced-form input,
+.advanced-form select,
+.advanced-form textarea {
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin: 0;
+}
+
+.advanced-form input[type='radio'] {
+  margin-right: 0.5rem;
+}
+
+.advanced-form input[type='text'],
+.advanced-form textarea,
+.advanced-form select {
+  width: 100%;
+}
+
+.advanced-form textarea {
+  min-height: 100px;
+}
+
+.advanced-form label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.advanced-form .field {
+  margin-bottom: 1rem;
+}
+
+.advanced-form .required,
+.advanced-form .error {
+  color: #d63642;
+}
+
+.advanced-form .error {
+  margin: 0.25rem 0;
+  display: block;
+}
+
+.advanced-form button {
+  border: 1px solid #3642d6;
+  border-radius: 4px;
+  background: #3642d6;
+  color: white;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.advanced-form:hover {
+  filter: brightness(1.1);
+}
+
+.advanced-form button:disabled {
+  opacity: 0.5;
+}
+
+
+.container {
+  margin: 0 auto;
+}
+
+.box {
+  
+  background-color: #fff;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.tab-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  position: relative;
+}
+
+.tab-list::before {
+  content: '';
+  display: block;
+  height: 2px;
+  width: 50%;
+  position: absolute;
+  bottom: 0;
+  background-color: #aaa;
+  transition: .3s;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  transition: .3s;
+  opacity: 0.5;
+}
+
+.tab-toggle {
+  display: none;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-toggle:nth-child(1):checked ~ .tab-list .tab-item:nth-child(1),
+.tab-toggle:nth-child(2):checked ~ .tab-list .tab-item:nth-child(2), 
+.tab-toggle:nth-child(3):checked ~ .tab-list .tab-item:nth-child(3) {
+  opacity: 1;
+}
+
+.tab-toggle:nth-child(2):checked ~ .tab-list::before {
+  transform: translateX(100%);
+}
+
+.tab-toggle:nth-child(3):checked ~ .tab-list::before {
+  transform: translateX(200%);
+}
+
+.tab-toggle:nth-child(1):checked ~ .tab-container .tab-content:nth-child(1),
+.tab-toggle:nth-child(2):checked ~ .tab-container .tab-content:nth-child(2),
+.tab-toggle:nth-child(3):checked ~ .tab-container .tab-content:nth-child(3) {
+  display: block;
+}
+
+.tab-trigger {
+  display: block;
+  padding: 10px 0;
+}
+
+.tab-container {
+  padding-top: 15px;
+}
