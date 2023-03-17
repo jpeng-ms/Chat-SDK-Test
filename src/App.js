@@ -1,15 +1,19 @@
 import { useState } from 'react'
 import { AdvancedForm } from './components/forms/AdvancedForm'
+import { CallClient } from "@azure/communication-calling";
 import { ChatClient } from '@azure/communication-chat';
 import {
     AzureCommunicationTokenCredential,
     parseConnectionString
 } from "@azure/communication-common";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
+import { array } from 'yup';
 
 export default function App() {
   const [formValues, setFormValues] = useState([])
   const [checked, setChecked] = useState(false)
+  const [status, setStatus] = useState('')
+
   const handleTab = () => { 
     if (checked === 0) {
       setChecked(1)
@@ -20,55 +24,123 @@ export default function App() {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setSubmitting(true)
-    setFormValues(values)
+    // setFormValues(values)
     await new Promise((r) => setTimeout(r, 1000))
     switch (values.action) {
       case 'init':
-        init(values, checked);
+        await init(values, checked);
         break;
       case 'sendmsg':
-        sendMessage(values.messageType, values.messageContent);
+        await sendMessage(values);
         break;
       case 'loadmsg':
-        loadMessage()
+        await loadMessage()
         break;
       case 'startnotification':
-        startnotification()
+        await startnotification(values)
         break;
       case 'stopnotification':
-        stopnotification();
+        await stopnotification();
         break;
+      case 'end':
+        await end()
       default:
         console.log("error: " + values.actions)
         break;
     }
-    setSubmitting(false)
   }
 
   const init = async(value, checked) => {
-    let token = ''
-    let endpoint = ''
-    console.log(checked);
-    console.log(value);
-    const chatClient = new ChatClient(endpoint, new AzureCommunicationTokenCredential(token));
-    console.log("init called");
+    setStatus("init started")
+    if (checked == 0) {
+      let result1 = await _startCall(value)
+      setFormValues(result1)
+    }
+    let result2 = await _startChat(value)
+    setFormValues(result2)
   }
 
-  const sendMessage = async(type, content) => {
-    console.log(type, content)
-    console.log("send message called")
+  const _startChat = async(value) => {
+    setStatus("chat start requested")
+    window.chatClient = new ChatClient(value.endpoint, 
+      new AzureCommunicationTokenCredential(value.token));
+    let thread = await _getThreadID(value.threadid)
+    window.chatThreadClient = await window.chatClient.getChatThreadClient(thread);
+    setStatus("chat started")
+  }
+
+  const end = async() => {
+    setStatus("call ended requested")
+    let result = await window.call.hangUp();
+    setStatus("call ended")
+    setFormValues(result)
+  }
+
+  const _startCall = async(value) => {
+    setStatus("call start requested")
+    if (window.callAgent === undefined) {
+      await _initCall(value)
+    }
+    window.call = window.callAgent.join({ meetingLink: value.threadid },{});
+    window.call.on('stateChanged', () => {
+      setStatus("call state: " +  window.call.state);
+    })
+  }
+
+  const _initCall = async(value) => {
+    console.log("init called")
+    const callClient = new CallClient();
+    window.callToken = new AzureCommunicationTokenCredential(value.token);
+    window.callAgent = await callClient.createCallAgent(window.callToken, { displayName: value.displayName });
+  }
+
+  const sendMessage = async(value) => {
+    setStatus("send message requested")
+    let sendMessageRequest = { content: value.messageContent };
+    let sendMessageOptions = { senderDisplayName : value.displayname };
+    let sendChatMessageResult = await window.chatThreadClient.sendMessage(sendMessageRequest, sendMessageOptions);
+    setStatus("send message done")
+    setFormValues(sendChatMessageResult)
   }
 
   const loadMessage = async() => {
-    console.log("load message called")
+    setStatus("load message requested")
+    let array = []
+    for await (const message of window.chatThreadClient
+      .listMessages({ maxPageSize: 200 })) {
+        array.push(message)
+    }
+    setStatus("load message done")
+    setFormValues(array)
   }
 
-  const startnotification = async() => {
-    console.log("start")
+  const startnotification = async(value) => {
+    setStatus("real time notification requested ");
+    setFormValues({})
+    let result = await window.chatClient.startRealtimeNotifications();
+    setStatus("real time notification started ");
+    setFormValues(result)
+    window.chatClient.on("chatMessageReceived", (e) => {
+      array.push(e)
+      setStatus("new event:  chatMessageReceived");
+      setFormValues(array)
+    })
   }
 
   const stopnotification = async() => {
-    console.log("stop")
+    let result = await window.chatClient.stopRealtimeNotifications();
+    setStatus("real time notification stopped ");
+    setFormValues(result)
+  }
+
+  const _getThreadID = async(val) => {
+    if(/(http(s?)):\/\//i.test(val)) {
+      var base = val.split("/meetup-join/")[1]
+      var thread = base.split("thread.v2/")[0]
+      thread += "thread.v2"
+      return decodeURIComponent(thread)
+    }
+    return val
   }
 
   const formSchema = [
@@ -83,8 +155,9 @@ export default function App() {
       label: 'Actions',
       componentType: 'radioGroup',
       options: [
-        { label: 'Join Chat', value: 'init' },
-        { label: 'Send Message', value: 'sendmsg', disable: false },
+        { label: 'Join Chat/Call', value: 'init' },
+        { label: 'Leave Chat/Call', value: 'end' },
+        { label: 'Send Message', value: 'sendmsg' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
@@ -114,6 +187,7 @@ export default function App() {
       componentType: 'radioGroup',
       options: [
         { label: 'Join Chat', value: 'init' },
+        { label: 'Leave Chat', value: 'end' },
         { label: 'Send Message', value: 'sendmsg' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
@@ -172,7 +246,7 @@ export default function App() {
           <div>
             <p>Request status:</p>
             <pre>
-              HTTP 200
+            <p>{status}</p>
             </pre>
           </div>
           <p>Response status:</p>
