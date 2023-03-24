@@ -10,6 +10,7 @@ export default function App() {
   const [checked, setChecked] = useState(0)
   const [status, setStatus] = useState('')
   const [mri, setMRI] = useState('')
+  const [threadInfo, setThreadInfo] = useState('')
 
   const handleTab = () => { 
     if (checked === 0) {
@@ -44,6 +45,12 @@ export default function App() {
         break;
       case 'eventControl':
         await eventControl(values)
+        break;
+      case 'addParticipant':
+        await addParticipant(values)
+        break;
+      case 'removeParticipant':
+        await removeParticipant(values)
         break;
       default:
         console.log("error: " + values.actions)
@@ -82,7 +89,14 @@ export default function App() {
     setStatus("chat start requested")
     window.chatClient = new ChatClient(await _getEndpointURL(value.connectionString), 
       new AzureCommunicationTokenCredential(token));
-    let thread = await _getThreadID(value.threadid)
+    let thread
+    if (checked === 1) {
+      const createChatThreadResult = await window.chatClient.createChatThread({ topic: "Welcome to ACS Chat" });
+      thread = createChatThreadResult.chatThread ? createChatThreadResult.chatThread.id : "";
+      setThreadInfo(thread);
+    } else {
+      thread = await _getThreadID(value.threadid)
+    }
     window.chatThreadClient = await window.chatClient.getChatThreadClient(thread);
     setStatus("chat started")
   }
@@ -185,6 +199,48 @@ export default function App() {
     }
   }
 
+  const addParticipant = async(value) => {
+    try {
+      setStatus("add participant requested")
+      const id = (value["add-userMRI-userType"] === 'acs') ? 
+      { communicationUserId: value["add-userMRI-id"] } : {microsoftTeamsUserId: value["add-userMRI-id"]}
+      const addParticipantsRequest =
+      {
+        participants: [
+          {
+            id: id,
+            displayName: value["add-userMRI-displayName"]
+          }
+        ]
+      };
+      let result = await window.chatThreadClient.addParticipants(addParticipantsRequest);
+      setFormValues(result)
+    } catch (err) {
+      setStatus("failed to add participant")
+      setFormValues(err)
+    }
+  }
+
+  const removeParticipant = async(value) => {
+    try {
+      const id = (value["remove-userMRI-userType"] === 'acs') ? 
+      { communicationUserId: value["add-userMRI-id"] } : {microsoftTeamsUserId: value["add-userMRI-id"]}
+      const removeParticipantsRequest =
+      {
+        participants: [
+          {
+            id: id
+          }
+        ]
+      };
+      let result = await window.chatThreadClient.removeParticipant(removeParticipantsRequest);
+      setFormValues(result)
+    } catch (err) {
+      setStatus("failed to remove participant")
+      setFormValues(err)
+    }
+  }
+
   const _on = async(value) => {
     setStatus("turning on event: " + value.eventType);
     let result = await window.chatClient.on(value.eventType, (e) => {
@@ -283,18 +339,20 @@ export default function App() {
   ]
 
   const formSchema2 = [
-    { name: 'connectionstring', label: 'Connection String', componentType: 'text', required: true },
+    { name: 'connectionString', label: 'Connection String', componentType: 'text', required: true },
     {
       name: 'action',
       label: 'Actions',
       componentType: 'radioGroup',
       options: [
-        { label: 'Join Chat', value: 'init' },
-        { label: 'Leave Chat', value: 'end' },
+        { label: 'Create Chat', value: 'init' },
         { label: 'Send Message', value: 'sendmsg' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
+        { label: 'Event Control', value: 'eventControl' },
+        { label: 'Add an user', value: 'addParticipant' },
+        { label: 'Remove an user', value: 'removeParticipant' },
       ],
     },
     {
@@ -306,11 +364,64 @@ export default function App() {
       label: 'Message Type',
       componentType: 'select',
       options: [
-        { label: 'RichText/HTML', value: 'html' },
+        { label: 'Html', value: 'html' },
         { label: 'Text', value: 'text' },
+        { label: 'Topic Update', value: 'topicUpdated' },
+        { label: 'Participant Added', value: 'participantAdded' },
+        { label: 'Participant Removed', value: 'participantRemoved' }
       ],
-      condition: { key: 'action', value: 'sendmsg', operator: '=' },
-    }
+      condition: { key: 'action', value: 'sendmsg', operator: '=' }
+    },
+    {
+      name: 'eventAction',
+      label: 'Event Action',
+      componentType: 'radioGroup',
+      options: [
+        { label: 'Subscribe', value: 'on' },
+        { label: 'Unsubscribe', value: 'off' }
+      ],
+      condition: { key: 'action', value: 'eventControl', operator: '=' },
+    },
+    {
+      name: 'eventType',
+      label: 'Event Type',
+      componentType: 'select',
+      options: [
+        { label: 'chatMessageReceived', value: 'chatMessageReceived' },
+        { label: 'chatMessageEdited', value: 'chatMessageEdited' },
+        { label: 'chatMessageDeleted', value: 'chatMessageDeleted' },
+        { label: 'typingIndicatorReceived', value: 'typingIndicatorReceived' },
+        { label: 'readReceiptReceived', value: 'readReceiptReceived' },
+        { label: 'chatThreadCreated', value: 'chatThreadCreated' },
+        { label: 'chatThreadPropertiesUpdated', value: 'chatThreadPropertiesUpdated' },
+        { label: 'chatThreadDeleted', value: 'chatThreadDeleted' },
+        { label: 'participantsAdded', value: 'participantsAdded' },
+        { label: 'participantsRemoved', value: 'participantsRemoved' }
+      ],
+      condition: { key: 'action', value: 'eventControl', operator: '=' },
+    },
+    {
+      name: 'add-userMRI-id', label: 'User MRI', componentType: 'text',
+      condition: { key: 'action', value: 'addParticipant', operator: '=' }
+    },
+    {
+      name: 'remove-userMRI-id', label: 'User MRI', componentType: 'text',
+      condition: { key: 'action', value: 'removeParticipant', operator: '=' }
+    },
+    {
+      name: 'add-userMRI-displayName', label: 'User Display Name', componentType: 'text',
+      condition: { key: 'action', value: 'addParticipant', operator: '=' }
+    },
+    {
+      name: 'add-userMRI-userType',
+      label: 'User Type',
+      componentType: 'select',
+      options: [
+        { label: 'Teams User', value: 'teams' },
+        { label: 'ACS', value: 'acs' }
+      ],
+      condition: { key: 'action', value: 'addParticipant', operator: '=' }
+    },
   ]
 
   return (
@@ -348,6 +459,7 @@ export default function App() {
         <div className="results section">
           <div>
             <p>{ mri }</p>
+            <p>{ threadInfo }</p>
             <p>Request status:</p>
             <pre>
             <p>{ status }</p>
