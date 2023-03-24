@@ -1,4 +1,4 @@
-# Chat SDK Debug Tool
+# Chat SDK Test Tool
 ![workflow](https://github.com/jpeng-ms/Chat-SDK-Test/actions/workflows/node.js.yml/badge.svg)
 ![GitHub issues](https://img.shields.io/github/issues/jpeng-ms/Chat-SDK-Test)
 [![License](https://img.shields.io/github/license/jpeng-ms/Chat-SDK-Test)]()
@@ -6,9 +6,9 @@
 An sample project that helps developers to test out Chat JS SDK (@azure/communication-chat).
 
 # Background
-Azure Communication Service (ACS) provides various communication services such as Calling, Chat, SMS, etc. This tool is meanly used by ACS developers to test the Chat functionality between ACS user and Teams user (Interop and Adhoc). Learn more about ACS [here](https://learn.microsoft.com/en-us/azure/communication-services/overview).
+Azure Communication Service (ACS) provides various communication services such as Calling, Chat, SMS, etc. This tool is meant to support ACS developers and provides a testing tool for Chat Interop and Adhoc scenarios specifically. Learn more about ACS [here](https://learn.microsoft.com/en-us/azure/communication-services/overview).
 
-Specially, you need to obtain the following information:
+In particular, you might need some or all of the following information:
 
 1. `connection string` of your Azure communication resoruce. You can obtain this via Azure portal. Click [here](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource?tabs=linux&pivots=platform-azp#access-your-connection-strings-and-service-endpoints) for more info
 2. `meeting URL` of the Teams meeting you have set up
