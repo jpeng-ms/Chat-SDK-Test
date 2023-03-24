@@ -1,4 +1,8 @@
 # Chat SDK Debug Tool
+![workflow](https://github.com/jpeng-ms/Chat-SDK-Test/actions/workflows/node.js.yml/badge.svg)
+![GitHub issues](https://img.shields.io/github/issues/jpeng-ms/Chat-SDK-Test)
+[![License](https://img.shields.io/github/license/jpeng-ms/Chat-SDK-Test)]()
+
 An sample project that helps developers to test out Chat JS SDK (@azure/communication-chat).
 
 # Background
