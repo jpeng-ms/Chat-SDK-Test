@@ -39,7 +39,14 @@ The webpage would be hosted under `http://localhost:3000/`
 
 # Others
 
+### Readings
+1. https://www.npmjs.com/package/@azure/communication-chat
+2. https://learn.microsoft.com/en-us/azure/communication-services/concepts/chat/concepts
+3. https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/chat/get-started?tabs=linux&pivots=programming-language-javascript
+4. https://learn.microsoft.com/en-us/azure/communication-services/concepts/chat/sdk-features
 
+### Support
+Please report any issue in this github repo. Private DMs would be ignored.
 
-### credit
+### Credit
 project build on top of `react-advanced-form`: https://github.com/taniarascia/react-advanced-form
