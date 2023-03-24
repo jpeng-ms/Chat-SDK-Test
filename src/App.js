@@ -2,12 +2,8 @@ import { useState } from 'react'
 import { AdvancedForm } from './components/forms/AdvancedForm'
 import { CallClient } from "@azure/communication-calling";
 import { ChatClient } from '@azure/communication-chat';
-import {
-    AzureCommunicationTokenCredential,
-    parseConnectionString
-} from "@azure/communication-common";
+import { AzureCommunicationTokenCredential } from "@azure/communication-common";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
-import { array } from 'yup';
 
 export default function App() {
   const [formValues, setFormValues] = useState('')
@@ -66,7 +62,7 @@ export default function App() {
       let result2 = await _startChat(value, token)
       setFormValues(result2)
     } catch (err) {
-      setStatus("init failed")
+      setStatus("init failed - CORS error means server is down")
       setFormValues(err)
     }
   }
