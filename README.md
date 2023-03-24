@@ -26,7 +26,8 @@ The webpage would be hosted under `http://localhost:3000/`
        - enter meeting URL as thread ID, then choose `join call/chat`
        - make sure you are admitted to the call before starting any chat related activities
 <img width="1542" alt="image" src="https://user-images.githubusercontent.com/109105353/227407205-92c00efe-9f5a-48f1-a0cc-39cfbf361155.png">
-<img width="1620" alt="image" src="https://user-images.githubusercontent.com/109105353/227407588-47fe4ea5-2106-4883-b061-9a542e44f711.png">
+<img width="1623" alt="image" src="https://user-images.githubusercontent.com/109105353/227412701-3a6467b1-98a7-47f3-8234-9d0398a654d5.png">
+
 
 3. Adhoc chat with Teams user
        - select `new thread` tab
@@ -35,7 +36,7 @@ The webpage would be hosted under `http://localhost:3000/`
           - enter the MRI, display of the Teams user
           - *make sure the Teams tenant has ACS Interop federation enabled*
 
-<img width="1541" alt="image" src="https://user-images.githubusercontent.com/109105353/227406497-fbf80e75-cdb4-4a92-8145-4469785b37e5.png">
+<img width="1623" alt="image" src="https://user-images.githubusercontent.com/109105353/227412800-33659c25-2201-499b-86ad-bdc526b8a675.png">
 
 # Others
 
@@ -46,7 +47,7 @@ The webpage would be hosted under `http://localhost:3000/`
 4. https://learn.microsoft.com/en-us/azure/communication-services/concepts/chat/sdk-features
 
 ### Support
-Please report any issue in this github repo. Private DMs would be ignored.
+Please report any issue in this [github repo](https://github.com/jpeng-ms/Chat-SDK-Test/issues) with steps to reproduce and screenshots if any.
 
 ### Credit
-project build on top of `react-advanced-form`: https://github.com/taniarascia/react-advanced-form
+- UI based on [`react-advanced-form`](https://github.com/taniarascia/react-advanced-form)
