@@ -60,6 +60,7 @@ export default function App() {
         break;
       case 'renderLastMessage':
         await renderLastMessage(values);
+        break;
       default:
         console.log("error: " + values.actions)
         break;
