@@ -11,6 +11,12 @@ export default function App() {
   const [status, setStatus] = useState('')
   const [mri, setMRI] = useState('')
   const [threadInfo, setThreadInfo] = useState('')
+  const [tokenString, setTokenString] = useState('')
+  const [lastMessageContent, setLastMessageContent] = useState('')
+  const [lastMessageContentAttachments, setLastMessageContentAttachments] = useState('')
+
+  const overlayContainer = '';
+  const loadingImageOverlay = '';
 
   const handleTab = () => { 
     if (checked === 0) {
@@ -50,8 +56,10 @@ export default function App() {
         await addParticipant(values)
         break;
       case 'removeParticipant':
-        await removeParticipant(values)
+        await removeParticipant(values);
         break;
+      case 'renderLastMessage':
+        await renderLastMessage(values);
       default:
         console.log("error: " + values.actions)
         break;
@@ -72,6 +80,16 @@ export default function App() {
       setStatus("init failed - CORS error means server is down")
       setFormValues(err)
     }
+    _setupUI();
+  }
+
+  const _setupUI = async() => {
+    const overlayContainer = document.getElementById('overlay-container');
+    const loadingImageOverlay = document.getElementById('full-scale-image');
+    loadingImageOverlay.addEventListener('click', () => {
+      overlayContainer.style.display = 'none';
+    });
+
   }
 
   const _getToken = async(value) => {
@@ -81,6 +99,7 @@ export default function App() {
     const token = await identityClient.getToken(user, ["voip", "chat"]);
     setStatus("token created");
     value.token = token;
+    setTokenString(token);
     setMRI("MRI: " + user.communicationUserId)
     return token
 }
@@ -221,6 +240,53 @@ export default function App() {
     }
   }
 
+  const renderLastMessage = async(value) => {
+    setStatus("render preview images requested")
+    setFormValues('');
+    try {
+      setFormValues('');
+        document.getElementById('message-content').innerHTML = lastMessageContent;
+        document.getElementById('message-content').style.display = 'block';
+        setImgHandler(document.getElementById('message-content'), lastMessageContentAttachments);
+        await fetchPreviewImages(lastMessageContentAttachments, tokenString.token);
+    } catch (err) {
+      setStatus("render preview images failed")
+      setFormValues(err)
+    }
+  }
+
+  async function fetchPreviewImages(attachments) {
+    if (!attachments.length > 0) {
+      return;
+    }
+    // since each message could contain more than one inline image
+    // we need to fetch them individually 
+    const result = await Promise.all(
+        attachments.map(async (attachment) => {
+          // fetch preview image from its 'previewURL'
+          const response = await fetch(walkaround(attachment.previewUrl), {
+            method: 'GET',
+            headers: {
+              // the token here should the same one from chat initialization
+              'Authorization': 'Bearer ' + tokenString.token,
+            },
+          });
+          // the response would be in image blob we can render it directly
+          return {
+            id: attachment.id,
+            content: await response.blob(),
+          };
+        }),
+    );
+    result.forEach((imageResult) => {
+      const urlCreator = window.URL || window.webkitURL;
+      const url = urlCreator.createObjectURL(imageResult.content);
+      // look up the image ID and replace its 'src' with object URL
+      document.getElementById(imageResult.id).src = url;
+    });
+  }
+
+
   const removeParticipant = async(value) => {
     try {
       const id = (value["remove-userMRI-userType"] === 'acs') ? 
@@ -245,10 +311,58 @@ export default function App() {
     setStatus("turning on event: " + value.eventType);
     let result = await window.chatClient.on(value.eventType, (e) => {
       setStatus("new event: " + value.eventType);
-      setFormValues(e)
-    })
+        if (e.attachments.length > 0) {
+          setLastMessageContentAttachments(e.attachments);
+          setLastMessageContent(e.message);
+        }
+        console.log(e);
+        setFormValues(e)
+    });
     setFormValues(result)
   }
+
+  function setImgHandler(element, imageAttachments) {
+    // do nothing if there's no image attachments
+    if (!imageAttachments.length > 0) {
+      return;
+    }
+    const imgs = element.getElementsByTagName('img');
+    for (const img of imgs) {
+      img.addEventListener('click', (e) => {
+        // fetch full scale image upon click
+        fetchFullScaleImage(e, imageAttachments);
+      });
+    }
+  }
+
+  function fetchFullScaleImage(e, imageAttachments) {
+    // get the image ID from the clicked image element
+    const link = imageAttachments.filter((attachment) =>
+      attachment.id === e.target.id)[0].url;
+    loadingImageOverlay.src = '';
+    
+    // fetch the image
+    fetch(walkaround(link), {
+      method: 'GET',
+      headers: {'Authorization': 'Bearer ' + tokenString.token},
+    }).then(async (result) => {
+    
+      // now we set image blob to our overlay element
+      const content = await result.blob();
+      const urlCreator = window.URL || window.webkitURL;
+      const url = urlCreator.createObjectURL(content);
+      loadingImageOverlay.src = url;
+    });
+    // show overlay
+    overlayContainer.style.display = 'block';
+  }
+
+  function walkaround(url) {
+    return url.replace('threads//', 'threads/123/');
+    // return string1.replace('https://global.chat.prod.communication.microsoft.com', _getEndpointURL(connectionString));
+  }
+
+
 
   const _off = async(value) => {
     setStatus("turning off event: " + value.eventType);
@@ -288,7 +402,8 @@ export default function App() {
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
-        { label: 'Event Control', value: 'eventControl' }
+        { label: 'Event Control', value: 'eventControl' },
+        { label: 'Render Last Message', value: 'renderLastMessage' },
       ],
     },
     {
@@ -353,6 +468,7 @@ export default function App() {
         { label: 'Event Control', value: 'eventControl' },
         { label: 'Add an user', value: 'addParticipant' },
         { label: 'Remove an user', value: 'removeParticipant' },
+        { label: 'Render Last Message', value: 'renderLastMessage' }
       ],
     },
     {
@@ -427,7 +543,11 @@ export default function App() {
   return (
     <>
       <h1>Chat SDK Test</h1>
-
+      <div className="overlay" id="overlay-container">
+        <div className="content">
+            <img id="full-scale-image" src="" alt="" />
+        </div>
+      </div>
       <div className="flex">
         <div className="form section">
         <div className="container">
@@ -467,6 +587,9 @@ export default function App() {
           </div>
           <p>Response status:</p>
           <pre>{JSON.stringify(formValues, null, 2)}</pre>
+          <div id="message-content">
+            { lastMessageContent } 
+          </div>
         </div>
       </div>
     </>
