@@ -22,6 +22,8 @@ The webpage would be hosted under `http://localhost:3000/`
 
 # Supported Chat Types
 1. ACS Chat with ACS user
+<img width="1231" alt="image" src="https://user-images.githubusercontent.com/109105353/229880000-c8bf2b39-c356-47b5-b3bd-e6ecdb71f6eb.png">
+
 2. Interop chat with Teams user
        - enter meeting URL as thread ID, then choose `join call/chat`
        - make sure you are admitted to the call before starting any chat related activities
