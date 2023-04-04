@@ -81,7 +81,6 @@ export default function App() {
       setStatus("init failed - CORS error means server is down")
       setFormValues(err)
     }
-    _setupUI();
   }
 
   const _setupUI = async() => {
@@ -244,6 +243,7 @@ export default function App() {
   const renderLastMessage = async(value) => {
     setStatus("render preview images requested")
     setFormValues('');
+    _setupUI();
     try {
       setFormValues('');
         document.getElementById('message-content').innerHTML = lastMessageContent;
@@ -312,12 +312,12 @@ export default function App() {
     setStatus("turning on event: " + value.eventType);
     let result = await window.chatClient.on(value.eventType, (e) => {
       setStatus("new event: " + value.eventType);
+      console.log(e);
+      setFormValues(e)
         if (e.attachments.length > 0) {
           setLastMessageContentAttachments(e.attachments);
           setLastMessageContent(e.message);
         }
-        console.log(e);
-        setFormValues(e)
     });
     setFormValues(result)
   }
