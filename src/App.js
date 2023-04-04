@@ -71,7 +71,7 @@ export default function App() {
     setStatus("init started")
     try {
       let token = await _getToken(value);
-      if (checked === 0) {
+      if (checked === 0 && value.threadid.indexOf("meetup-join") !== -1) {
         let result1 = await _startCall(value, token)
         setFormValues(result1)
       }
