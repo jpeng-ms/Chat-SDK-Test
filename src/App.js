@@ -15,9 +15,6 @@ export default function App() {
   const [lastMessageContent, setLastMessageContent] = useState('')
   const [lastMessageContentAttachments, setLastMessageContentAttachments] = useState('')
 
-  const overlayContainer = '';
-  const loadingImageOverlay = '';
-
   const handleTab = () => { 
     if (checked === 0) {
       setChecked(1)
@@ -84,10 +81,8 @@ export default function App() {
   }
 
   const _setupUI = async() => {
-    const overlayContainer = document.getElementById('overlay-container');
-    const loadingImageOverlay = document.getElementById('full-scale-image');
-    loadingImageOverlay.addEventListener('click', () => {
-      overlayContainer.style.display = 'none';
+    document.getElementById('full-scale-image').addEventListener('click', () => {
+      document.getElementById('overlay-container').style.display = 'none';
     });
 
   }
@@ -241,15 +236,20 @@ export default function App() {
   }
 
   const renderLastMessage = async(value) => {
+    document.getElementById('message-content').innerHTML = lastMessageContent;
+    document.getElementById('message-content').style.display = 'block';
+    if (lastMessageContentAttachments.length === 0) {
+      return;
+    }
     setStatus("render preview images requested")
     setFormValues('');
     _setupUI();
     try {
       setFormValues('');
-        document.getElementById('message-content').innerHTML = lastMessageContent;
-        document.getElementById('message-content').style.display = 'block';
-        setImgHandler(document.getElementById('message-content'), lastMessageContentAttachments);
-        await fetchPreviewImages(lastMessageContentAttachments, tokenString.token);
+      document.getElementById('message-content').innerHTML = lastMessageContent;
+      document.getElementById('message-content').style.display = 'block';
+      setImgHandler(document.getElementById('message-content'), lastMessageContentAttachments);
+      await fetchPreviewImages(lastMessageContentAttachments, tokenString.token);
     } catch (err) {
       setStatus("render preview images failed")
       setFormValues(err)
@@ -313,11 +313,11 @@ export default function App() {
     let result = await window.chatClient.on(value.eventType, (e) => {
       setStatus("new event: " + value.eventType);
       console.log(e);
-      setFormValues(e)
-        if (e.attachments.length > 0) {
-          setLastMessageContentAttachments(e.attachments);
-          setLastMessageContent(e.message);
-        }
+      setFormValues(e);
+      setLastMessageContent(e.message);
+      if (e.attachments.length > 0) {
+        setLastMessageContentAttachments(e.attachments);
+      }
     });
     setFormValues(result)
   }
@@ -340,7 +340,8 @@ export default function App() {
     // get the image ID from the clicked image element
     const link = imageAttachments.filter((attachment) =>
       attachment.id === e.target.id)[0].url;
-    loadingImageOverlay.src = '';
+    
+    document.getElementById('full-scale-image').src = '';
     
     // fetch the image
     fetch(walkaround(link), {
@@ -352,10 +353,10 @@ export default function App() {
       const content = await result.blob();
       const urlCreator = window.URL || window.webkitURL;
       const url = urlCreator.createObjectURL(content);
-      loadingImageOverlay.src = url;
+      document.getElementById('full-scale-image').src = url;
     });
     // show overlay
-    overlayContainer.style.display = 'block';
+    document.getElementById('overlay-container').style.display = 'block';
   }
 
   function walkaround(url) {
@@ -581,15 +582,17 @@ export default function App() {
           <div>
             <p>{ mri }</p>
             <p>{ threadInfo }</p>
+            <hr></hr>
             <p>Request status:</p>
             <pre>
             <p>{ status }</p>
             </pre>
           </div>
+          <hr></hr>
           <p>Response status:</p>
           <pre>{JSON.stringify(formValues, null, 2)}</pre>
-          <div id="message-content">
-            { lastMessageContent } 
+          <hr></hr>
+          <div id="message-content" className='received'>
           </div>
         </div>
       </div>

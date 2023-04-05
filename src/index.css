@@ -222,3 +222,30 @@ pre {
 #overlay-container {
  display: none
 }
+
+.received {
+  display: block;
+  border-radius: 10px;
+  color: black;
+  margin-right: auto;
+  margin-left: 0;
+  background-color: #f3f2f1;
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: none;
+  display: block;
+  max-width: 300px;
+}
+
+.received img {
+  background-image: url("data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mM88B8AAoUBwfkGMTcAAAAASUVORK5CYII=");
+  background-size: cover;
+  display: block;
+  cursor: pointer;
+  pointer-events: auto;
+  max-width: 100%;
+  height: auto;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+}
