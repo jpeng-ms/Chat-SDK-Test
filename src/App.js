@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ReactDOM from 'react-dom';
 import { AdvancedForm } from './components/forms/AdvancedForm'
 import { CallClient } from "@azure/communication-calling";
 import { ChatClient } from '@azure/communication-chat';
@@ -244,6 +245,7 @@ export default function App() {
     setStatus("render preview images requested")
     setFormValues('');
     _setupUI();
+    renderFileAttachment();
     try {
       setFormValues('');
       document.getElementById('message-content').innerHTML = lastMessageContent;
@@ -256,16 +258,35 @@ export default function App() {
     }
   }
 
+  const renderFileAttachment = async() => {
+    const renderedOutput = lastMessageContentAttachments
+    .filter(attachment => attachment.attachmentType === "file")
+    .map(attachment => 
+      <div className="attachment-container" key={attachment.id}>
+				<img className="attachment-icon" alt="attachment file icon"/>
+				<div>
+					<p>{attachment.name}</p>
+          <a href={attachment.previewUrl} target="_blank" rel="noreferrer">Open</a>
+          <a href={attachment.url} target="_blank" rel="noreferrer">Download</a>
+				</div>
+			</div>
+    )
+    ReactDOM.render(renderedOutput, document.querySelector('#file-attachment'));
+  }
+
   async function fetchPreviewImages(attachments) {
-    if (!attachments.length > 0) {
+    if (!attachments.map(attachment => attachment.attachmentType === "teamsInlineImage" || 
+    attachment.attachmentType === "teamsImage").length > 0) {
       return;
     }
     // since each message could contain more than one inline image
     // we need to fetch them individually 
     const result = await Promise.all(
-        attachments.map(async (attachment) => {
+        attachments.filter(attachment => attachment.attachmentType === "teamsInlineImage" || 
+                                      attachment.attachmentType === "teamsImage")
+        .map(async (attachment) => {
           // fetch preview image from its 'previewURL'
-          const response = await fetch(walkaround(attachment.previewUrl), {
+          const response = await fetch(attachment.previewUrl, {
             method: 'GET',
             headers: {
               // the token here should the same one from chat initialization
@@ -290,8 +311,8 @@ export default function App() {
 
   const removeParticipant = async(value) => {
     try {
-      const id = (value["remove-userMRI-userType"] === 'acs') ? 
-      { communicationUserId: value["add-userMRI-id"] } : {microsoftTeamsUserId: value["add-userMRI-id"]}
+      const id = (value["remove-userMRI-id"].indexOf('acs') > 0 ) ? 
+      { communicationUserId: value["remove-userMRI-id"] } : {microsoftTeamsUserId: value["remove-userMRI-id"]}
       const removeParticipantsRequest =
       {
         participants: [
@@ -594,6 +615,7 @@ export default function App() {
           <hr></hr>
           <div id="message-content" className='received'>
           </div>
+          <div id="file-attachment"></div>
         </div>
       </div>
     </>
