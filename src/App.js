@@ -385,6 +385,9 @@ export default function App() {
     // return string1.replace('https://global.chat.prod.communication.microsoft.com', _getEndpointURL(connectionString));
   }
 
+  function copyToClipboard() {
+    navigator.clipboard.writeText(tokenString.token);
+  }
 
 
   const _off = async(value) => {
@@ -601,6 +604,8 @@ export default function App() {
         </div>
         <div className="results section">
           <div>
+            <input type="text" value={tokenString.token}></input>
+            <button onClick={copyToClipboard()}>Copy token to clipboard</button>
             <p>{ mri }</p>
             <p>{ threadInfo }</p>
             <hr></hr>
