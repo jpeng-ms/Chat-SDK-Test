@@ -40,6 +40,21 @@ The webpage would be hosted under `http://localhost:3000/`
 
 <img width="1623" alt="image" src="https://user-images.githubusercontent.com/109105353/227412800-33659c25-2201-499b-86ad-bdc526b8a675.png">
 
+# Features
+
+### Inline image rendering
+
+![image](https://github.com/jpeng-ms/Chat-SDK-Test/assets/109105353/1a65bfeb-a530-44ba-bb22-13efe7a11e3c)
+
+<img width="1123" alt="image" src="https://github.com/jpeng-ms/Chat-SDK-Test/assets/109105353/4df0cedc-5290-4e78-b87a-98f01ae75c0e">
+
+### File attachment rendering
+
+![image](https://github.com/jpeng-ms/Chat-SDK-Test/assets/109105353/10c18b09-ad76-4b46-9f74-d9a30a186fcc)
+
+<img width="1096" alt="image" src="https://github.com/jpeng-ms/Chat-SDK-Test/assets/109105353/cd10d195-773d-484e-b8de-775dc95f025f">
+
+
 # Others
 
 ### Readings
