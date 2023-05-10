@@ -263,6 +263,7 @@ export default function App() {
     .filter(attachment => attachment.attachmentType === "file")
     .map(attachment => 
       <div className="attachment-container" key={attachment.id}>
+        <p className="attachment-type">{attachment.contentType}</p>
 				<img className="attachment-icon" alt="attachment file icon"/>
 				<div>
 					<p>{attachment.name}</p>
@@ -385,8 +386,8 @@ export default function App() {
     // return string1.replace('https://global.chat.prod.communication.microsoft.com', _getEndpointURL(connectionString));
   }
 
-  function copyToClipboard() {
-    navigator.clipboard.writeText(tokenString.token);
+  async function copyToClipboard() {
+    await navigator.clipboard.writeText(tokenString.token);
   }
 
 
@@ -605,7 +606,7 @@ export default function App() {
         <div className="results section">
           <div>
             <input type="text" value={tokenString.token}></input>
-            <button onClick={copyToClipboard()}>Copy token to clipboard</button>
+            <button onClick={copyToClipboard}>Copy token to clipboard</button>
             <p>{ mri }</p>
             <p>{ threadInfo }</p>
             <hr></hr>
