@@ -249,3 +249,56 @@ pre {
   white-space: nowrap;
   overflow: hidden;
 }
+
+/*
+file attachments
+*/
+
+
+.attachment-container {
+  overflow: hidden;
+  background: #f3f2f1;
+  padding: 20px;
+  margin: 0;
+  width: 300px;
+  border-radius: 10px;
+}
+.attachment-container img {
+  width: 80px;
+  height: 80px;
+  float: left;
+  margin: 0;
+}
+.attachment-container p {
+  font-weight: 700;
+  margin: 0 5px 20px 0;
+}
+
+.attachment-container {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  margin-top: 20px;
+}
+
+.attachment-icon {
+  content: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDQ4IDQ4IiBoZWlnaHQ9IjQ4cHgiIGlkPSJMYXllcl8xIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4cHgiIHhtbDpzcGFjZT0icHJlc2VydmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxwYXRoIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTM3LDQ3SDExYy0yLjIwOSwwLTQtMS43OTEtNC00VjVjMC0yLjIwOSwxLjc5MS00LDQtNGgxOC45NzMgIGMwLjAwMiwwLDAuMDA1LDAsMC4wMDcsMGgwLjAySDMwYzAuMzIsMCwwLjU5MywwLjE2MSwwLjc3NiwwLjM5NWw5LjgyOSw5LjgyOUM0MC44NCwxMS40MDcsNDEsMTEuNjgsNDEsMTJsMCwwdjAuMDIxICBjMCwwLjAwMiwwLDAuMDAzLDAsMC4wMDVWNDNDNDEsNDUuMjA5LDM5LjIwOSw0NywzNyw0N3ogTTMxLDQuMzgxVjExaDYuNjE5TDMxLDQuMzgxeiBNMzksMTNoLTljLTAuNTUzLDAtMS0wLjQ0OC0xLTFWM0gxMSAgQzkuODk2LDMsOSwzLjg5Niw5LDV2MzhjMCwxLjEwNCwwLjg5NiwyLDIsMmgyNmMxLjEwNCwwLDItMC44OTYsMi0yVjEzeiBNMzMsMzlIMTVjLTAuNTUzLDAtMS0wLjQ0Ny0xLTFjMC0wLjU1MiwwLjQ0Ny0xLDEtMWgxOCAgYzAuNTUzLDAsMSwwLjQ0OCwxLDFDMzQsMzguNTUzLDMzLjU1MywzOSwzMywzOXogTTMzLDMxSDE1Yy0wLjU1MywwLTEtMC40NDctMS0xYzAtMC41NTIsMC40NDctMSwxLTFoMThjMC41NTMsMCwxLDAuNDQ4LDEsMSAgQzM0LDMwLjU1MywzMy41NTMsMzEsMzMsMzF6IE0zMywyM0gxNWMtMC41NTMsMC0xLTAuNDQ3LTEtMWMwLTAuNTUyLDAuNDQ3LTEsMS0xaDE4YzAuNTUzLDAsMSwwLjQ0OCwxLDFDMzQsMjIuNTUzLDMzLjU1MywyMywzMywyMyAgeiIgZmlsbC1ydWxlPSJldmVub2RkIi8+PC9zdmc+");
+}
+
+.attachment-container a {
+  background-color: #dadada;
+  color: black;
+  font-size: 16px;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+  margin-right: 10px;
+  text-decoration: none;
+  margin-top: 10px;
+}
+
+.attachment-container a:hover {
+  background-color: black;
+  color: white;
+}
