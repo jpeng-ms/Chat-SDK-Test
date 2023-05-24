@@ -313,3 +313,7 @@ file attachments
   padding: 2px; 
   text-transform: uppercase;
 }
+
+.image-attachment {
+  max-width: 130px;
+}

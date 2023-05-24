@@ -245,6 +245,7 @@ export default function App() {
     setStatus("render preview images requested")
     setFormValues('');
     _setupUI();
+    renderImageAttachment(lastMessageContentAttachments);
     renderFileAttachment();
     try {
       setFormValues('');
@@ -273,6 +274,21 @@ export default function App() {
 			</div>
     )
     ReactDOM.render(renderedOutput, document.querySelector('#file-attachment'));
+  }
+
+  const renderImageAttachment = (attachments) => {
+    const renderedOutput = lastMessageContentAttachments
+    .filter(attachment => attachment.attachmentType === "teamsImage")
+    .map(attachment => 
+      <img 
+      alt="imageattachments" 
+      src=""
+      key={attachment.id}
+      className='image-attachment'
+      id={attachment.id}></img>
+    )
+    ReactDOM.render(renderedOutput, document.querySelector('#image-attachment'));
+    setImgHandler(document.getElementById('image-attachment'), lastMessageContentAttachments);
   }
 
   async function fetchPreviewImages(attachments) {
@@ -621,6 +637,7 @@ export default function App() {
           <hr></hr>
           <div id="message-content" className='received'>
           </div>
+          <div id="image-attachment"></div>
           <div id="file-attachment"></div>
         </div>
       </div>
