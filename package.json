@@ -12,7 +12,16 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "roosterjs": "7.16.0",
+    "roosterjs-editor-core": "7.16.0",
+    "roosterjs-editor-dom": "7.16.0",
+    "roosterjs-editor-plugins": "7.16.0",
+    "roosterjs-editor-types": "7.16.0",
+    "roosterjs-html-sanitizer": "1.6.0",
+    "roosterjs-react": "0.0.72",
+    "roosterjs-react-common": "0.0.71",
+    "roosterjs-react-ribbon": "0.0.72"
   },
   "scripts": {
     "start": "react-scripts start",

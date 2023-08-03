@@ -5,6 +5,8 @@ import { CallClient } from "@azure/communication-calling";
 import { ChatClient } from '@azure/communication-chat';
 import { AzureCommunicationTokenCredential } from "@azure/communication-common";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
+import { createEditorViewState, EmojiPlugin } from 'roosterjs-react';
+import { Ribbon, RibbonPlugin } from 'roosterjs-react-ribbon';
 
 export default function App() {
   const [formValues, setFormValues] = useState('')
@@ -515,7 +517,7 @@ export default function App() {
       ],
     },
     {
-      name: 'messageContent', label: 'Message Content', componentType: 'textarea',
+      name: 'messageContent', label: 'Message Content', componentType: 'editor',
       condition: { key: 'action', value: 'sendmsg', operator: '=' },
     },
     {

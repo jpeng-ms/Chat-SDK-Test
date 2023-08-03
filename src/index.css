@@ -317,3 +317,13 @@ file attachments
 .image-attachment {
   max-width: 130px;
 }
+
+.ms-Button {
+  background: #fff !important;
+}
+
+
+.editor-container {
+  background: #fff;
+  border:#aaa 1px solid;
+}

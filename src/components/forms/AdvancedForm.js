@@ -7,8 +7,11 @@ import {
   TextArea,
   TextField,
   RadioGroup,
-  ConditionalField,
+  ConditionalField
 } from '.'
+
+import { SampleEditorContainer } from '../editor/SampleEditor.tsx'
+
 import {
   getInitialValues,
   getDefaultValues,
@@ -21,6 +24,7 @@ const components = [
   { componentType: 'select', component: Select },
   { componentType: 'checkbox', component: Checkbox },
   { componentType: 'radioGroup', component: RadioGroup },
+  { componentType: 'editor', component: SampleEditorContainer },
 ]
 
 export const AdvancedForm = ({
