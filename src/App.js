@@ -35,6 +35,9 @@ export default function App() {
       case 'sendmsg':
         await sendMessage(values);
         break;
+      case 'sendtyping':
+        await sendtyping(values);
+        break;
       case 'loadmsg':
         await loadMessage()
         break;
@@ -157,6 +160,19 @@ export default function App() {
       setFormValues(sendChatMessageResult)
     } catch (err) {
       setStatus("send message failed")
+      setFormValues(err)
+    }
+  }
+
+  const sendtyping = async(value) => {
+    setStatus("send typing event requested")
+    try {
+      let sendTypingNotificationOptions = { senderDisplayName : value.displayname};
+      let sendChatMessageResult = await window.chatThreadClient.sendTypingNotification(sendTypingNotificationOptions);
+      setStatus("send typing event done")
+      setFormValues(sendChatMessageResult)
+    } catch (err) {
+      setStatus("ssend typing evente failed")
       setFormValues(err)
     }
   }
@@ -327,18 +343,13 @@ export default function App() {
 
 
   const removeParticipant = async(value) => {
+    setStatus("remove participant requested")
+    setFormValues('');
     try {
-      const id = (value["remove-userMRI-id"].indexOf('acs') > 0 ) ? 
+      const communicationIdentifier = (value["remove-userMRI-id"].indexOf('acs') > 0 ) ? 
       { communicationUserId: value["remove-userMRI-id"] } : {microsoftTeamsUserId: value["remove-userMRI-id"]}
-      const removeParticipantsRequest =
-      {
-        participants: [
-          {
-            id: id
-          }
-        ]
-      };
-      let result = await window.chatThreadClient.removeParticipant(removeParticipantsRequest);
+      let result = await window.chatThreadClient.removeParticipant(communicationIdentifier);
+      setStatus("remove participant done")
       setFormValues(result)
     } catch (err) {
       setStatus("failed to remove participant")
@@ -442,6 +453,7 @@ export default function App() {
         { label: 'Join Chat/Call', value: 'init' },
         { label: 'Leave Chat/Call', value: 'end' },
         { label: 'Send Message', value: 'sendmsg' },
+        { label: 'Send Typing Event', value: 'sendtyping' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
@@ -498,6 +510,7 @@ export default function App() {
 
   const formSchema2 = [
     { name: 'connectionString', label: 'Connection String', componentType: 'text', required: true },
+    { name: 'displayname', label: 'Display Name', componentType: 'text', required: true },
     {
       name: 'action',
       label: 'Actions',
@@ -505,6 +518,7 @@ export default function App() {
       options: [
         { label: 'Create Chat', value: 'init' },
         { label: 'Send Message', value: 'sendmsg' },
+        { label: 'Send Typing Event', value: 'sendtyping' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
