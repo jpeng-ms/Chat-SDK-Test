@@ -146,7 +146,7 @@ export default function App() {
     console.log("init called")
     const callClient = new CallClient();
     window.callToken = new AzureCommunicationTokenCredential(token);
-    window.callAgent = await callClient.createCallAgent(window.callToken, { displayName: value.displayName });
+    window.callAgent = await callClient.createCallAgent(window.callToken, { displayName: value.displayname });
   }
 
   const sendMessage = async(value) => {
