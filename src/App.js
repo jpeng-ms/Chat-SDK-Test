@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AdvancedForm } from './components/forms/AdvancedForm'
 import { CallClient } from "@azure/communication-calling";
 import { ChatClient } from '@azure/communication-chat';
 import { AzureCommunicationTokenCredential } from "@azure/communication-common";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
+import Highlight from 'react-highlight'
 
 export default function App() {
   const [formValues, setFormValues] = useState('')
@@ -15,7 +16,7 @@ export default function App() {
   const [tokenString, setTokenString] = useState('')
   const [lastMessageContent, setLastMessageContent] = useState('')
   const [lastMessageContentAttachments, setLastMessageContentAttachments] = useState('')
-
+  
   const handleTab = () => { 
     if (checked === 0) {
       setChecked(1)
@@ -103,10 +104,31 @@ export default function App() {
     return token
 }
 
+const policy = {
+  name: 'policy',
+  async sendRequest(request, next) {
+    const response = await next(request);
+    console.log(response);
+    window.document.getElementById("http-response").innerHTML = JSON.stringify(response, null, 2);
+    // setHttpValues(response);
+    return response;
+  }
+};
+
   const _startChat = async(value, token) => {
     setStatus("chat start requested")
-    window.chatClient = new ChatClient(await _getEndpointURL(value.connectionString), 
-      new AzureCommunicationTokenCredential(token));
+
+    window.chatClient = new ChatClient(
+      await _getEndpointURL(value.connectionString), 
+      new AzureCommunicationTokenCredential(token),
+      {
+        additionalPolicies: [
+          {
+            policy: policy,
+            position: 'perCall'
+          }
+        ]
+      });
     let thread
     if (checked === 1) {
       const createChatThreadResult = await window.chatClient.createChatThread({ topic: "Welcome to ACS Chat" });
@@ -250,6 +272,10 @@ export default function App() {
       setStatus("failed to add participant")
       setFormValues(err)
     }
+  }
+
+  const logResponse = async(value) => {
+    //await window.chatThreadClient.
   }
 
   const renderLastMessage = async(value) => {
@@ -415,6 +441,11 @@ export default function App() {
 
   async function copyToClipboard() {
     await navigator.clipboard.writeText(tokenString.token);
+  }
+
+  function toggleHttpContainer() {
+    let status = document.getElementById('http-response-container').style.display;
+    document.getElementById('http-response-container').style.display = (status === 'block') ? 'none' : 'block';
   }
 
 
@@ -597,6 +628,13 @@ export default function App() {
     },
   ]
 
+
+  const header = [
+    { name: 'token', label: 'Token', componentType: 'text', required: true },
+    { name: 'threadid', label: 'Thread ID or Meeting URL', componentType: 'text', required: true },
+    { name: 'displayname', label: 'Display Name', componentType: 'text', required: true },
+  ]
+
   return (
     <>
       <h1>Chat SDK Test</h1>
@@ -633,26 +671,40 @@ export default function App() {
           </div>
 
         </div>
-        <div className="results section">
-          <div>
+        <div className="results section advanced-form">
+          <div className='advanced-form'>
+            <div className='container'>
             <input type="text" value={tokenString.token}></input>
-            <button onClick={copyToClipboard}>Copy token to clipboard</button>
+            <button onClick={copyToClipboard} className='container-btn'> Copy token</button>
+            </div>
+            <button onClick={toggleHttpContainer} className='container-btn'> Show/Hide Network Traffic</button>
+        
             <p>{ mri }</p>
             <p>{ threadInfo }</p>
             <hr></hr>
-            <p>Request status:</p>
+            <label>Request status:</label>
             <pre>
             <p>{ status }</p>
             </pre>
           </div>
           <hr></hr>
-          <p>Response status:</p>
-          <pre>{JSON.stringify(formValues, null, 2)}</pre>
-          <hr></hr>
+          <label>Response status:</label>
+          <Highlight language="json" className='json'>
+            {JSON.stringify(formValues, null, 2)}
+          </Highlight>
           <div id="message-content" className='received'>
+          <hr></hr>
           </div>
           <div id="image-attachment"></div>
           <div id="file-attachment"></div>
+          <hr/>
+        </div>
+        <div className='results section' id='http-response-container'>
+        <p> HTTP Response Details:</p>
+        <Highlight language="json" className='json'>
+        <pre id='http-response'></pre>
+        </Highlight>
+         
         </div>
       </div>
     </>
