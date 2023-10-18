@@ -105,7 +105,7 @@ pre {
 }
 
 .advanced-form:hover {
-  filter: brightness(1.1);
+  /*filter: brightness(1.1);*/
 }
 
 .advanced-form button:disabled {
