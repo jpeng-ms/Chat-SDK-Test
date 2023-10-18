@@ -274,10 +274,6 @@ const policy = {
     }
   }
 
-  const logResponse = async(value) => {
-    //await window.chatThreadClient.
-  }
-
   const renderLastMessage = async(value) => {
     document.getElementById('message-content').innerHTML = lastMessageContent;
     document.getElementById('message-content').style.display = 'block';
@@ -626,13 +622,6 @@ const policy = {
       ],
       condition: { key: 'action', value: 'addParticipant', operator: '=' }
     },
-  ]
-
-
-  const header = [
-    { name: 'token', label: 'Token', componentType: 'text', required: true },
-    { name: 'threadid', label: 'Thread ID or Meeting URL', componentType: 'text', required: true },
-    { name: 'displayname', label: 'Display Name', componentType: 'text', required: true },
   ]
 
   return (
