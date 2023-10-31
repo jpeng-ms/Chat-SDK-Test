@@ -1,6 +1,7 @@
 {
   "name": "chat-sdk-test",
   "version": "0.1.0",
+  "homepage": "https://jpeng-ms.github.io/Chat-SDK-Test/",
   "private": false,
   "dependencies": {
     "@azure/communication-calling": "^1.1.0",
