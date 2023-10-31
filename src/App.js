@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { AdvancedForm } from './components/forms/AdvancedForm'
 import { CallClient } from "@azure/communication-calling";
 import { ChatClient } from '@azure/communication-chat';
 import { AzureCommunicationTokenCredential } from "@azure/communication-common";
 import { CommunicationIdentityClient } from "@azure/communication-identity";
+import Highlight from 'react-highlight'
 
 export default function App() {
   const [formValues, setFormValues] = useState('')
@@ -15,7 +16,7 @@ export default function App() {
   const [tokenString, setTokenString] = useState('')
   const [lastMessageContent, setLastMessageContent] = useState('')
   const [lastMessageContentAttachments, setLastMessageContentAttachments] = useState('')
-
+  
   const handleTab = () => { 
     if (checked === 0) {
       setChecked(1)
@@ -34,6 +35,9 @@ export default function App() {
         break;
       case 'sendmsg':
         await sendMessage(values);
+        break;
+      case 'sendtyping':
+        await sendtyping(values);
         break;
       case 'loadmsg':
         await loadMessage()
@@ -100,10 +104,31 @@ export default function App() {
     return token
 }
 
+const policy = {
+  name: 'policy',
+  async sendRequest(request, next) {
+    const response = await next(request);
+    console.log(response);
+    window.document.getElementById("http-response").innerHTML = JSON.stringify(response, null, 2);
+    // setHttpValues(response);
+    return response;
+  }
+};
+
   const _startChat = async(value, token) => {
     setStatus("chat start requested")
-    window.chatClient = new ChatClient(await _getEndpointURL(value.connectionString), 
-      new AzureCommunicationTokenCredential(token));
+
+    window.chatClient = new ChatClient(
+      await _getEndpointURL(value.connectionString), 
+      new AzureCommunicationTokenCredential(token),
+      {
+        additionalPolicies: [
+          {
+            policy: policy,
+            position: 'perCall'
+          }
+        ]
+      });
     let thread
     if (checked === 1) {
       const createChatThreadResult = await window.chatClient.createChatThread({ topic: "Welcome to ACS Chat" });
@@ -143,7 +168,7 @@ export default function App() {
     console.log("init called")
     const callClient = new CallClient();
     window.callToken = new AzureCommunicationTokenCredential(token);
-    window.callAgent = await callClient.createCallAgent(window.callToken, { displayName: value.displayName });
+    window.callAgent = await callClient.createCallAgent(window.callToken, { displayName: value.displayname });
   }
 
   const sendMessage = async(value) => {
@@ -157,6 +182,19 @@ export default function App() {
       setFormValues(sendChatMessageResult)
     } catch (err) {
       setStatus("send message failed")
+      setFormValues(err)
+    }
+  }
+
+  const sendtyping = async(value) => {
+    setStatus("send typing event requested")
+    try {
+      let sendTypingNotificationOptions = { senderDisplayName : value.displayname};
+      let sendChatMessageResult = await window.chatThreadClient.sendTypingNotification(sendTypingNotificationOptions);
+      setStatus("send typing event done")
+      setFormValues(sendChatMessageResult)
+    } catch (err) {
+      setStatus("ssend typing evente failed")
       setFormValues(err)
     }
   }
@@ -327,18 +365,13 @@ export default function App() {
 
 
   const removeParticipant = async(value) => {
+    setStatus("remove participant requested")
+    setFormValues('');
     try {
-      const id = (value["remove-userMRI-id"].indexOf('acs') > 0 ) ? 
+      const communicationIdentifier = (value["remove-userMRI-id"].indexOf('acs') > 0 ) ? 
       { communicationUserId: value["remove-userMRI-id"] } : {microsoftTeamsUserId: value["remove-userMRI-id"]}
-      const removeParticipantsRequest =
-      {
-        participants: [
-          {
-            id: id
-          }
-        ]
-      };
-      let result = await window.chatThreadClient.removeParticipant(removeParticipantsRequest);
+      let result = await window.chatThreadClient.removeParticipant(communicationIdentifier);
+      setStatus("remove participant done")
       setFormValues(result)
     } catch (err) {
       setStatus("failed to remove participant")
@@ -406,6 +439,11 @@ export default function App() {
     await navigator.clipboard.writeText(tokenString.token);
   }
 
+  function toggleHttpContainer() {
+    let status = document.getElementById('http-response-container').style.display;
+    document.getElementById('http-response-container').style.display = (status === 'block') ? 'none' : 'block';
+  }
+
 
   const _off = async(value) => {
     setStatus("turning off event: " + value.eventType);
@@ -442,6 +480,7 @@ export default function App() {
         { label: 'Join Chat/Call', value: 'init' },
         { label: 'Leave Chat/Call', value: 'end' },
         { label: 'Send Message', value: 'sendmsg' },
+        { label: 'Send Typing Event', value: 'sendtyping' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
@@ -498,6 +537,7 @@ export default function App() {
 
   const formSchema2 = [
     { name: 'connectionString', label: 'Connection String', componentType: 'text', required: true },
+    { name: 'displayname', label: 'Display Name', componentType: 'text', required: true },
     {
       name: 'action',
       label: 'Actions',
@@ -505,6 +545,7 @@ export default function App() {
       options: [
         { label: 'Create Chat', value: 'init' },
         { label: 'Send Message', value: 'sendmsg' },
+        { label: 'Send Typing Event', value: 'sendtyping' },
         { label: 'Load Past Messages', value: 'loadmsg' },
         { label: 'Start notification', value: 'startnotification' },
         { label: 'Stop notification', value: 'stopnotification' },
@@ -619,26 +660,40 @@ export default function App() {
           </div>
 
         </div>
-        <div className="results section">
-          <div>
+        <div className="results section advanced-form">
+          <div className='advanced-form'>
+            <div className='container'>
             <input type="text" value={tokenString.token}></input>
-            <button onClick={copyToClipboard}>Copy token to clipboard</button>
+            <button onClick={copyToClipboard} className='container-btn'> Copy token</button>
+            </div>
+            <button onClick={toggleHttpContainer} className='container-btn'> Show/Hide Network Traffic</button>
+        
             <p>{ mri }</p>
             <p>{ threadInfo }</p>
             <hr></hr>
-            <p>Request status:</p>
+            <label>Request status:</label>
             <pre>
             <p>{ status }</p>
             </pre>
           </div>
           <hr></hr>
-          <p>Response status:</p>
-          <pre>{JSON.stringify(formValues, null, 2)}</pre>
-          <hr></hr>
+          <label>Response status:</label>
+          <Highlight language="json" className='json'>
+            {JSON.stringify(formValues, null, 2)}
+          </Highlight>
           <div id="message-content" className='received'>
+          <hr></hr>
           </div>
           <div id="image-attachment"></div>
           <div id="file-attachment"></div>
+          <hr/>
+        </div>
+        <div className='results section' id='http-response-container'>
+        <p> HTTP Response Details:</p>
+        <Highlight language="json" className='json'>
+        <pre id='http-response'></pre>
+        </Highlight>
+         
         </div>
       </div>
     </>
