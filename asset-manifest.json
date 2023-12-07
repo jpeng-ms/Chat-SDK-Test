@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Chat-SDK-Test/static/css/main.3b4551b4.css",
-    "main.js": "/Chat-SDK-Test/static/js/main.7ceaa78a.js",
+    "main.js": "/Chat-SDK-Test/static/js/main.17275b7b.js",
     "index.html": "/Chat-SDK-Test/index.html",
     "main.3b4551b4.css.map": "/Chat-SDK-Test/static/css/main.3b4551b4.css.map",
-    "main.7ceaa78a.js.map": "/Chat-SDK-Test/static/js/main.7ceaa78a.js.map"
+    "main.17275b7b.js.map": "/Chat-SDK-Test/static/js/main.17275b7b.js.map"
   },
   "entrypoints": [
     "static/css/main.3b4551b4.css",
-    "static/js/main.7ceaa78a.js"
+    "static/js/main.17275b7b.js"
   ]
 }
