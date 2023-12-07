@@ -297,12 +297,13 @@ const policy = {
     }
   }
 
-  const renderFileAttachment = async() => {
+  const renderFileAttachment = async(recievedEvent) => {
+    var re = /(?:\.([^.]+))?$/;
     const renderedOutput = lastMessageContentAttachments
     .filter(attachment => attachment.attachmentType === "file")
     .map(attachment => 
       <div className="attachment-container" key={attachment.id}>
-        <p className="attachment-type">{attachment.contentType}</p>
+        <p className="attachment-type">{re.exec(attachment.name)[1]}</p>
 				<img className="attachment-icon" alt="attachment file icon"/>
 				<div>
 					<p>{attachment.name}</p>
@@ -314,9 +315,9 @@ const policy = {
     ReactDOM.render(renderedOutput, document.querySelector('#file-attachment'));
   }
 
-  const renderImageAttachment = (attachments) => {
+  const renderImageAttachment = () => {
     const renderedOutput = lastMessageContentAttachments
-    .filter(attachment => attachment.attachmentType === "teamsImage")
+    .filter(attachment => attachment.attachmentType === "image" && !lastMessageContent.includes(attachment.id))
     .map(attachment => 
       <img 
       alt="imageattachments" 
@@ -330,15 +331,14 @@ const policy = {
   }
 
   async function fetchPreviewImages(attachments) {
-    if (!attachments.map(attachment => attachment.attachmentType === "teamsInlineImage" || 
-    attachment.attachmentType === "teamsImage").length > 0) {
+    if (!attachments.map(attachment => attachment.attachmentType === "image" || 
+    attachment.attachmentType === "image").length > 0) {
       return;
     }
     // since each message could contain more than one inline image
     // we need to fetch them individually 
     const result = await Promise.all(
-        attachments.filter(attachment => attachment.attachmentType === "teamsInlineImage" || 
-                                      attachment.attachmentType === "teamsImage")
+        attachments.filter(attachment => attachment.attachmentType === "image")
         .map(async (attachment) => {
           // fetch preview image from its 'previewURL'
           const response = await fetch(attachment.previewUrl, {
