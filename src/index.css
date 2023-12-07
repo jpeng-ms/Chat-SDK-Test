@@ -124,6 +124,19 @@ pre {
   margin: 0 auto;
 }
 
+#root {
+  margin-top: 60px;
+}
+
+#footer {
+  margin: 0 auto;
+  text-align: center;
+  text-transform: capitalize;
+  margin-top: 80px;
+  color: gray;
+  font-size: 12px;
+}
+
 .box {
   
   background-color: #fff;

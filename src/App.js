@@ -626,7 +626,6 @@ const policy = {
 
   return (
     <>
-      <h1>Chat SDK Test</h1>
       <div className="overlay" id="overlay-container">
         <div className="content">
             <img id="full-scale-image" src="" alt="" />
@@ -635,6 +634,7 @@ const policy = {
       <div className="flex">
         <div className="form section">
         <div className="container">
+            <h1>Chat SDK Test</h1>
             <div className="box">
               <input type="radio" className="tab-toggle" name="tab-toggle" id="tab1" onChange={handleTab} checked={checked === 0} />
               <input type="radio" className="tab-toggle" name="tab-toggle" id="tab2" onChange={handleTab} checked={checked === 1} />
@@ -657,7 +657,7 @@ const policy = {
                 </div>
               </div>
             </div>
-          </div>
+        </div>
 
         </div>
         <div className="results section advanced-form">
@@ -696,6 +696,7 @@ const policy = {
          
         </div>
       </div>
+      <p id='footer'>SDK: 1.5.0-beta.1, Sgianling: Beta 23, API: 2023-11-15-preview</p>
     </>
   )
 }
