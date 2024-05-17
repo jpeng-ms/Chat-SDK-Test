@@ -696,7 +696,7 @@ const policy = {
          
         </div>
       </div>
-      <p id='footer'>SDK: 1.5.0-beta.1, Sgianling: Beta 23, API: 2023-11-15-preview</p>
+      <p id='footer'>SDK: 1.5.0, Sgianling: Beta 26, API: 2024-03-07</p>
     </>
   )
 }
