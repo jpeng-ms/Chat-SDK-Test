@@ -61,6 +61,8 @@ export default function App() {
       case 'renderLastMessage':
         await renderLastMessage(values);
         break;
+      case 'getChatThreadProperties':
+        await getChatThreadProperties();
       default:
         console.log("error: " + values.actions)
         break;
@@ -256,6 +258,18 @@ export default function App() {
     }
   }
 
+  const getChatThreadProperties = async () => {
+    setStatus("get chat thread properties requested")
+    try {
+      let getChatThreadPropertiesResult = await window.chatThreadClient.getProperties();
+      setStatus("get chat thread properties done")
+      setFormValues(getChatThreadPropertiesResult)
+    } catch (err) {
+      setStatus("get chat thread properties failed")
+      setFormValues(err)
+    }
+  }
+
   async function fetchPreviewImages(attachments) {
     if (!attachments.length > 0) {
       return;
@@ -405,6 +419,7 @@ export default function App() {
         { label: 'Stop notification', value: 'stopnotification' },
         { label: 'Event Control', value: 'eventControl' },
         { label: 'Render Last Message', value: 'renderLastMessage' },
+        { label: 'Get Chat Thread Properties', value: 'getChatThreadProperties' },
       ],
     },
     {
