@@ -60,6 +60,8 @@ export default function App() {
       case 'removeParticipant':
         await removeParticipant(values);
         break;
+      case 'getChatThreadProperties':
+        await getChatThreadProperties();
       case 'renderLastMessage':
         await renderLastMessage(values);
         break;
@@ -182,6 +184,18 @@ const policy = {
       setFormValues(sendChatMessageResult)
     } catch (err) {
       setStatus("send message failed")
+      setFormValues(err)
+    }
+  }
+
+  const getChatThreadProperties = async () => {
+    setStatus("get chat thread properties requested")
+    try {
+      let getChatThreadPropertiesResult = await window.chatThreadClient.getProperties();
+      setStatus("get chat thread properties done")
+      setFormValues(getChatThreadPropertiesResult)
+    } catch (err) {
+      setStatus("get chat thread properties failed")
       setFormValues(err)
     }
   }
@@ -486,6 +500,7 @@ const policy = {
         { label: 'Stop notification', value: 'stopnotification' },
         { label: 'Event Control', value: 'eventControl' },
         { label: 'Render Last Message', value: 'renderLastMessage' },
+        { label: 'Get Chat Thread Properties', value: 'getChatThreadProperties' },
       ],
     },
     {
@@ -552,7 +567,8 @@ const policy = {
         { label: 'Event Control', value: 'eventControl' },
         { label: 'Add an user', value: 'addParticipant' },
         { label: 'Remove an user', value: 'removeParticipant' },
-        { label: 'Render Last Message', value: 'renderLastMessage' }
+        { label: 'Render Last Message', value: 'renderLastMessage' },
+        { label: 'Get Chat Thread Properties', value: 'getChatThreadProperties' },
       ],
     },
     {
