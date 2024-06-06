@@ -62,6 +62,7 @@ export default function App() {
         break;
       case 'getChatThreadProperties':
         await getChatThreadProperties();
+        break;
       case 'renderLastMessage':
         await renderLastMessage(values);
         break;
