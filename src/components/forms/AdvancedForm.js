@@ -37,7 +37,6 @@ export const AdvancedForm = ({
   return (
     <Formik
       initialValues={getInitialValues(defaultValues, initialValues)}
-      validationSchema={validationSchema}
       onSubmit={onSubmit}
       validateOnMount
       {...props}
@@ -101,7 +100,7 @@ export const AdvancedForm = ({
                 />
               )
             })}
-            <button type="submit" disabled={!isValid || isSubmitting}>
+            <button type="submit">
               {buttonLabel}
             </button>
           </form>
