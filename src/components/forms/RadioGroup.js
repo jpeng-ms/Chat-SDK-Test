@@ -6,10 +6,11 @@ export const RadioGroup = ({
   form,
   required,
   options,
+  defaultValue,
   ...props
 }) => {
   return (
-    <FormField id={name} label={label} required={required} formProps={form}>
+    <FormField id={name} label={label} required={required} formProps={form} defaultValue={defaultValue}>
       {options.map((option) => (
         <div key={option.value}>
           <input
@@ -19,6 +20,7 @@ export const RadioGroup = ({
             value={option.value}
             checked={option.value === value}
             disabled={option.disabled}
+            defaultValue={option.value}
             {...fieldProps}
             {...props}
           />
