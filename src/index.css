@@ -112,6 +112,10 @@ pre {
   opacity: 0.5;
 }
 
+h1 {
+  color: #1a4aa0;
+}
+
 #http-response-container {
   display: none;
 }
@@ -122,6 +126,11 @@ pre {
 
 .container {
   margin: 0 auto;
+}
+
+.container-copy {
+  margin: 0 auto;
+  display: flex;
 }
 
 #root {
@@ -137,6 +146,24 @@ pre {
   font-size: 12px;
 }
 
+button[type="submit"] {
+  width: 100%;
+  border: none;
+  background-color: #3f6ec6;
+}
+
+button[type="submit"]:hover {
+  background-color: #000000;
+}
+
+.chat-icon {
+  color: #155598;
+}
+
+#sdk-container {
+  display: none;
+}
+
 .box {
   
   background-color: #fff;
@@ -150,6 +177,8 @@ pre {
   list-style: none;
   display: flex;
   position: relative;
+  color: #1a4aa0;
+  font-weight: 800;
 }
 
 .tab-list::before {
@@ -159,7 +188,7 @@ pre {
   width: 50%;
   position: absolute;
   bottom: 0;
-  background-color: #aaa;
+  background-color: #1a4aa0;
   transition: .3s;
 }
 
@@ -340,7 +369,15 @@ file attachments
 }
 
 .container-btn {
-  margin-top: 10px !important;
+  background-color: #2a2a2a !important;
+  border: none;
+  height: 100%;
+  align-self: center;
+  flex-grow: 1;
+}
+
+.container-copy button:hover {
+  background-color: #084eff !important;
 }
 
 pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}/*!
@@ -356,3 +393,75 @@ pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5p
   Code Blocks: /blob/v0.64.0/lib/css/components/_stacks-code-blocks.less
   Colors: /blob/v0.64.0/lib/css/exports/_stacks-constants-colors.less
 */.hljs{color:#2f3337;background:#f6f6f6}.hljs-subst{color:#2f3337}.hljs-comment{color:#656e77}.hljs-attr,.hljs-doctag,.hljs-keyword,.hljs-meta .hljs-keyword,.hljs-section,.hljs-selector-tag{color:#015692}.hljs-attribute{color:#803378}.hljs-name,.hljs-number,.hljs-quote,.hljs-selector-id,.hljs-template-tag,.hljs-type{color:#b75501}.hljs-selector-class{color:#015692}.hljs-link,.hljs-regexp,.hljs-selector-attr,.hljs-string,.hljs-symbol,.hljs-template-variable,.hljs-variable{color:#54790d}.hljs-meta,.hljs-selector-pseudo{color:#015692}.hljs-built_in,.hljs-literal,.hljs-title{color:#b75501}.hljs-bullet,.hljs-code{color:#535a60}.hljs-meta .hljs-string{color:#54790d}.hljs-deletion{color:#c02d2e}.hljs-addition{color:#2f6f44}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}
+
+
+.copy-text {
+	position: relative;
+	padding: 3px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+	display: flex;
+  width: 100%;
+}
+.copy-text input.text {
+	padding: 3px;
+	font-size: 13px;
+	color: #555;
+	border: none;
+	outline: none;
+}
+.copy-text button {
+	padding: 8px;
+	background: #2a2a2a;
+	color: #fff;
+	font-size: 14px;
+	border: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.copy-text button:active {
+	background: #084eff;
+}
+.copy-text button:before {
+	content: "Copied";
+	position: absolute;
+	top: -45px;
+	right: 0px;
+	background: #084eff;
+	padding: 8px 10px;
+	border-radius: 20px;
+	font-size: 15px;
+	display: none;
+}
+.copy-text button:after {
+	content: "";
+	position: absolute;
+	top: -20px;
+	right: 25px;
+	width: 10px;
+	height: 10px;
+	background: #5c81dc;
+	transform: rotate(45deg);
+	display: none;
+}
+.copy-text.active button:before,
+.copy-text.active button:after {
+	display: block;
+}
+
+.loading-container {
+  display: block;
+  text-align: center;
+  margin-top: 20vh;
+}
+
+.loading-icon {
+  font-size: 120px;
+  color: grey;
+}
+
+.loading-text {
+  font-weight: 600;
+}

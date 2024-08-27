@@ -5,6 +5,7 @@ import './index.css'
 
 import App from './App'
 
+console.warn = console.error = () => {};
 
 ReactDOM.render(
   <React.StrictMode>

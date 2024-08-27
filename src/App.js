@@ -60,6 +60,9 @@ export default function App() {
       case 'removeParticipant':
         await removeParticipant(values);
         break;
+      case 'getChatThreadProperties':
+        await getChatThreadProperties();
+        break;
       case 'renderLastMessage':
         await renderLastMessage(values);
         break;
@@ -70,6 +73,8 @@ export default function App() {
   }
 
   const init = async(value, checked) => {
+    document.getElementById('sdk-container').style.display = 'block';
+    document.getElementById('blank-container').style.display = 'none';
     setStatus("init started")
     try {
       let token = await _getToken(value);
@@ -89,10 +94,12 @@ export default function App() {
     document.getElementById('full-scale-image').addEventListener('click', () => {
       document.getElementById('overlay-container').style.display = 'none';
     });
-
   }
 
   const _getToken = async(value) => {
+    if (value.token) {
+      return value.token
+    }
     const identityClient = new CommunicationIdentityClient(value.connectionString);
     const user = await identityClient.createUser();
     setStatus("user created");
@@ -100,7 +107,7 @@ export default function App() {
     setStatus("token created");
     value.token = token;
     setTokenString(token);
-    setMRI("MRI: " + user.communicationUserId)
+    setMRI(user.communicationUserId)
     return token
 }
 
@@ -117,9 +124,9 @@ const policy = {
 
   const _startChat = async(value, token) => {
     setStatus("chat start requested")
-
+    let endpointUrl = value.endpointUrl ?? await _getEndpointURL(value.connectionString);
     window.chatClient = new ChatClient(
-      await _getEndpointURL(value.connectionString), 
+      endpointUrl,
       new AzureCommunicationTokenCredential(token),
       {
         additionalPolicies: [
@@ -182,6 +189,18 @@ const policy = {
       setFormValues(sendChatMessageResult)
     } catch (err) {
       setStatus("send message failed")
+      setFormValues(err)
+    }
+  }
+
+  const getChatThreadProperties = async () => {
+    setStatus("get chat thread properties requested")
+    try {
+      let getChatThreadPropertiesResult = await window.chatThreadClient.getProperties();
+      setStatus("get chat thread properties done")
+      setFormValues(getChatThreadPropertiesResult)
+    } catch (err) {
+      setStatus("get chat thread properties failed")
       setFormValues(err)
     }
   }
@@ -435,8 +454,8 @@ const policy = {
     // return string1.replace('https://global.chat.prod.communication.microsoft.com', _getEndpointURL(connectionString));
   }
 
-  async function copyToClipboard() {
-    await navigator.clipboard.writeText(tokenString.token);
+  async function copyToClipboard(content) {
+    await navigator.clipboard.writeText(content);
   }
 
   function toggleHttpContainer() {
@@ -469,12 +488,28 @@ const policy = {
       return str.split("/;accesskey=")[0]
   }
   const formSchema = [
-    { name: 'connectionString', label: 'Connection String', componentType: 'text', required: true },
-    { name: 'threadid', label: 'Thread ID or Meeting URL', componentType: 'text', required: true },
-    { name: 'displayname', label: 'Display Name', componentType: 'text', required: true },
+    {
+      name: 'authentication',
+      label: '1. Authentication',
+      componentType: 'radioGroup',
+      defaultValue: 'viaConnectionString',
+      options: [
+        { label: 'via Connection String', value: 'viaConnectionString'},
+        { label: 'via Token', value: 'viaToken' }
+      ],
+    },
+    {
+      name: 'connectionString', label: 'Connection String', componentType: 'text',
+      condition: { key: 'authentication', value: 'viaConnectionString', operator: '=' }
+    },
+    { name: 'token', label: 'Token', componentType: 'text', condition: { key: 'authentication', value: 'viaToken', operator: '=' } },
+    { name: 'communicationUserId', label: 'User ID (MRI)', componentType: 'text', condition: { key: 'authentication', value: 'viaToken', operator: '=' } },
+    { name: 'endpointUrl', label: 'Endpoint URL', componentType: 'text', condition: { key: 'authentication', value: 'viaToken', operator: '=' } },
+    { name: 'threadid', label: '2. Thread ID or Meeting URL', componentType: 'text'},
+    { name: 'displayname', label: '3. Display Name', componentType: 'text' },
     {
       name: 'action',
-      label: 'Actions',
+      label: '4. Actions',
       componentType: 'radioGroup',
       options: [
         { label: 'Join Chat/Call', value: 'init' },
@@ -486,6 +521,7 @@ const policy = {
         { label: 'Stop notification', value: 'stopnotification' },
         { label: 'Event Control', value: 'eventControl' },
         { label: 'Render Last Message', value: 'renderLastMessage' },
+        { label: 'Get Chat Thread Properties', value: 'getChatThreadProperties' },
       ],
     },
     {
@@ -536,11 +572,27 @@ const policy = {
   ]
 
   const formSchema2 = [
-    { name: 'connectionString', label: 'Connection String', componentType: 'text', required: true },
-    { name: 'displayname', label: 'Display Name', componentType: 'text', required: true },
+    {
+      name: 'authentication',
+      label: '1. Authentication',
+      componentType: 'radioGroup',
+      defaultValue: 'viaConnectionString',
+      options: [
+        { label: 'via Connection String', value: 'viaConnectionString'},
+        { label: 'via Token', value: 'viaToken'}
+      ],
+    },
+    {
+      name: 'connectionString', label: 'Connection String', componentType: 'text',
+      condition: { key: 'authentication', value: 'viaConnectionString', operator: '=' }
+    },
+    { name: 'token', label: 'Token', componentType: 'text', condition: { key: 'authentication', value: 'viaToken', operator: '=' } },
+    { name: 'communicationUserId', label: 'User ID (MRI)', componentType: 'text', condition: { key: 'authentication', value: 'viaToken', operator: '=' } },
+    { name: 'endpointUrl', label: 'Endpoint URL', componentType: 'text', condition: { key: 'authentication', value: 'viaToken', operator: '=' } },
+    { name: 'displayname', label: '2. Display Name', componentType: 'text'},
     {
       name: 'action',
-      label: 'Actions',
+      label: '3. Actions',
       componentType: 'radioGroup',
       options: [
         { label: 'Create Chat', value: 'init' },
@@ -552,7 +604,8 @@ const policy = {
         { label: 'Event Control', value: 'eventControl' },
         { label: 'Add an user', value: 'addParticipant' },
         { label: 'Remove an user', value: 'removeParticipant' },
-        { label: 'Render Last Message', value: 'renderLastMessage' }
+        { label: 'Render Last Message', value: 'renderLastMessage' },
+        { label: 'Get Chat Thread Properties', value: 'getChatThreadProperties' },
       ],
     },
     {
@@ -634,7 +687,7 @@ const policy = {
       <div className="flex">
         <div className="form section">
         <div className="container">
-            <h1>Chat SDK Test</h1>
+            <h1><i className="fa-regular fa-message"></i>  Chat SDK Tool</h1>
             <div className="box">
               <input type="radio" className="tab-toggle" name="tab-toggle" id="tab1" onChange={handleTab} checked={checked === 0} />
               <input type="radio" className="tab-toggle" name="tab-toggle" id="tab2" onChange={handleTab} checked={checked === 1} />
@@ -660,15 +713,20 @@ const policy = {
         </div>
 
         </div>
-        <div className="results section advanced-form">
+        <div className="results section advanced-form" id='sdk-container'>
           <div className='advanced-form'>
-            <div className='container'>
-            <input type="text" value={tokenString.token}></input>
-            <button onClick={copyToClipboard} className='container-btn'> Copy token</button>
+            <div className='container-copy'>
+              <div className="copy-text">
+                <input type="text" className="text" value={tokenString.token ?? 'N/A'} disabled />
+                <button onClick={() => copyToClipboard(tokenString.token)}><i className="fa fa-clone" ></i></button>
+              </div>
+              <button onClick={toggleHttpContainer} className='container-btn'>Traffic</button>
             </div>
-            <button onClick={toggleHttpContainer} className='container-btn'> Show/Hide Network Traffic</button>
-        
-            <p>{ mri }</p>
+            <br/>
+            <div className="copy-text">
+                <input type="text" className="text" value={mri ?? 'N/A'} disabled />
+                <button onClick={() => copyToClipboard(mri)}><i className="fa fa-clone" ></i></button>
+            </div>
             <p>{ threadInfo }</p>
             <hr></hr>
             <label>Request status:</label>
@@ -694,6 +752,12 @@ const policy = {
         <pre id='http-response'></pre>
         </Highlight>
          
+        </div>
+        <div className='results section' id='blank-container'>
+          <div className='loading-container'>
+             <i className="fas fa-rocket loading-icon"></i>
+            <p className='loading-text'>Fill up details to get started</p>
+          </div>
         </div>
       </div>
       <p id='footer'>SDK: 1.5.0, Sgianling: Beta 26, API: 2024-03-07</p>
